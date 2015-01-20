@@ -1,6 +1,6 @@
 package com.jsontocsv.writer;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Joiner;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -12,11 +12,15 @@ public class CSVWriter {
 
     public void writeAsCSV(List<Map<String, String>> flatJson, String fileName) throws FileNotFoundException {
         Set<String> headers = collectHeaders(flatJson);
-        String output = StringUtils.join(headers.toArray(), ",") + "\n";
+        StringBuilder sb = new StringBuilder();
+        sb.append(Joiner.on(",").join(headers.toArray()));
+        sb.append(System.lineSeparator());
+
         for (Map<String, String> map : flatJson) {
-            output = output + getCommaSeperatedRow(headers, map) + "\n";
+            sb.append(getCommaSeperatedRow(headers, map));
+            sb.append(System.lineSeparator());
         }
-        writeToFile(output, fileName);
+        writeToFile(sb.toString(), fileName);
     }
 
     private void writeToFile(String output, String fileName) throws FileNotFoundException {
@@ -47,7 +51,7 @@ public class CSVWriter {
             String value = map.get(header) == null ? "" : map.get(header).replace(",", "");
             items.add(value);
         }
-        return StringUtils.join(items.toArray(), ",");
+        return Joiner.on(",").join(items.toArray());
     }
 
     private Set<String> collectHeaders(List<Map<String, String>> flatJson) {
