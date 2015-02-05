@@ -7,10 +7,8 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) throws Exception {
         JsonFlattener parser = new JsonFlattener();
-        CSVWriter writer = new CSVWriter();
-
         List<Map<String, String>> flatJson = parser.parseJson(jsonValue());
-        writer.writeAsCSV(flatJson, "sample.csv");
+        System.out.println(CSVWriter.delimitCSV(flatJson));
     }
 
     private static String jsonValue() {

@@ -10,7 +10,13 @@ import java.util.*;
 
 public class CSVWriter {
 
-    public void writeAsCSV(List<Map<String, String>> flatJson, String fileName) throws FileNotFoundException {
+    /**
+     * Format the flattened json list map into a comma delimited output and write to a file.
+     * @param flatJson List of a map with string key value pairs
+     * @param fileName Output file name and location
+     * @throws FileNotFoundException
+     */
+    public static void writeAsCSV(List<Map<String, String>> flatJson, String fileName) throws FileNotFoundException {
         Set<String> headers = collectHeaders(flatJson);
         StringBuilder sb = new StringBuilder();
         sb.append(Joiner.on(",").join(headers.toArray()));
@@ -23,7 +29,26 @@ public class CSVWriter {
         writeToFile(sb.toString(), fileName);
     }
 
-    private void writeToFile(String output, String fileName) throws FileNotFoundException {
+    /**
+     * Format the flattened json list map into a comma delimited output
+     * @param flatJson List of a map with string key value pairs
+     * @return String output
+     */
+    public static String delimitCSV(List<Map<String, String>> flatJson) {
+        Set<String> headers = collectHeaders(flatJson);
+        StringBuilder sb = new StringBuilder();
+        sb.append(Joiner.on(",").join(headers.toArray()));
+        sb.append(System.lineSeparator());
+
+        for (Map<String, String> map : flatJson) {
+            sb.append(getCommaSeperatedRow(headers, map));
+            sb.append(System.lineSeparator());
+        }
+
+        return sb.toString();
+    }
+
+    private static void writeToFile(String output, String fileName) throws FileNotFoundException {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(fileName));
@@ -35,7 +60,7 @@ public class CSVWriter {
         }
     }
 
-    private void close(BufferedWriter writer) {
+    private static void close(BufferedWriter writer) {
         try {
             if (writer != null) {
                 writer.close();
@@ -45,7 +70,7 @@ public class CSVWriter {
         }
     }
 
-    private String getCommaSeperatedRow(Set<String> headers, Map<String, String> map) {
+    private static String getCommaSeperatedRow(Set<String> headers, Map<String, String> map) {
         List<String> items = new ArrayList<String>();
         for (String header : headers) {
             String value = map.get(header) == null ? "" : map.get(header).replace(",", "");
@@ -54,7 +79,7 @@ public class CSVWriter {
         return Joiner.on(",").join(items.toArray());
     }
 
-    private Set<String> collectHeaders(List<Map<String, String>> flatJson) {
+    private static Set<String> collectHeaders(List<Map<String, String>> flatJson) {
         Set<String> headers = new TreeSet<String>();
         for (Map<String, String> map : flatJson) {
             headers.addAll(map.keySet());
